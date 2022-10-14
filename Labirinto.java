@@ -1,4 +1,4 @@
-package esercitazione4_esConclusivo;
+package Labyrinth;
 
 public class Labirinto{
     public final int dim = 5;
@@ -7,11 +7,6 @@ public class Labirinto{
     private final String orizzontalBlanks = "      ";
     private final String head = "  ()  ";
     private final String body = " -||- ";
-
-//         +------+  +      +  +      +  +------+  +------
-//         |  ()  |                      |         |  @@
-//         | -||- |                      |         |  @@
-//         +------+
 
     private Tessera[][] tessere;
 
@@ -107,24 +102,36 @@ public class Labirinto{
                 for(int i = 0; i < dim - 1; i++)
                     tessere[index][i] = tessere[index][i+1];
                 tessere[index][dim-1] = tesseraDaInserire;
+
+                if(index == rowPos)
+                    spostatiWest();
             }
             case 'n' -> {
                 tesseraUscente = tessere[dim-1][index];
                 for(int i = dim - 1; i > 0; i--)
                     tessere[i][index] = tessere[i-1][index];
                 tessere[0][index] = tesseraDaInserire;
+
+                if(index == colPos)
+                    spostatiSud();
             }
             case 's' -> {
                 tesseraUscente = tessere[0][index];
                 for(int i = 0; i < dim - 1; i++)
                     tessere[i][index] = tessere[i+1][index];
                 tessere[dim-1][index] = tesseraDaInserire;
+
+                if(index == colPos)
+                    spostatiNord();
             }
             case 'w' -> {
                 tesseraUscente = tessere[index][dim-1];
                 for(int i = dim - 1; i > 0; i--)
                     tessere[index][i] = tessere[index][i-1];
                 tessere[index][0] = tesseraDaInserire;
+
+                if(index == rowPos)
+                    spostatiEst();
             }
         }
 
@@ -145,7 +152,6 @@ public class Labirinto{
 
 
     public boolean controllaVittoria(){ return rowPos == (dim-1) && colPos == (dim-1); }
-
     public int getPunteggio() {
         return punteggio;
     }
@@ -161,6 +167,8 @@ public class Labirinto{
             return;
         }
         colPos++;
+
+        checkPremio();
     }
     public void spostatiWest(){
         if(tessere[rowPos][colPos].isWest() || colPos <= 0 || tessere[rowPos][colPos-1].isEst()){
@@ -168,20 +176,31 @@ public class Labirinto{
             return;
         }
         colPos--;
+
+        checkPremio();
     }
     public void spostatiSud(){
         if(tessere[rowPos][colPos].isSud() || rowPos >= dim-1 || tessere[rowPos+1][colPos].isNord()){
             System.out.println("Movimento non consentito");
             return;
         }
-        rowPos--;
+        rowPos++;
+
+        checkPremio();
     }
     public void spostatiNord(){
         if(tessere[rowPos][colPos].isNord() || rowPos <= 0 || tessere[rowPos-1][colPos].isSud()){
             System.out.println("Movimento non consentito");
             return;
         }
-        rowPos++;
+        rowPos--;
+
+        checkPremio();
+    }
+
+
+    private void checkPremio(){
+        punteggio += tessere[rowPos][colPos].ritiraCancellaPremio();
     }
 
 }

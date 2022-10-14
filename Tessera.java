@@ -1,4 +1,4 @@
-package esercitazione4_esConclusivo;
+package Labyrinth;
 import java.util.Random;
 
 public class Tessera {
