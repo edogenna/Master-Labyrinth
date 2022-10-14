@@ -1,5 +1,7 @@
 package Labyrinth;
 
+import Labyrinth.exceptions.MoveNotAllowedException;
+
 import java.util.Scanner;
 
 public class Main {
@@ -12,13 +14,13 @@ public class Main {
    final static char cInsert = 'i';
    final static char cStats = 'p';
    private static Scanner in;
-   private static Labirinto l;
-   private static Tessera t;
+   private static Maze l;
+   private static Piece t;
    public static void main(String[] args) {
       in = new Scanner(System.in);
       char c;
-      l = new Labirinto();
-      t = new Tessera();
+      l = new Maze();
+      t = new Piece();
       printBoard(l,t);
 
       while(true) {
@@ -32,38 +34,42 @@ public class Main {
 
    }
 
-   private static boolean mossa(char c, Labirinto l, Tessera t){
-      switch (c) {
-         case cNord:
-            l.spostatiNord();
-            break;
-         case cEst:
-            l.spostatiEst();
-            break;
-         case cSud:
-            l.spostatiSud();
-            break;
-         case cWest:
-            l.spostatiWest();
-            break;
-         case cRotateClockwise:
-            t.rotazione9Orario();
-            break;
-         case cRotateCounterClockwise:
-            t.rotazione90AntiOrario();
-            break;
-         case cInsert:
-            return insert(l, t);
-         case cStats:
-            printPointsAndLF();
-         default:
-            return false;
+   private static boolean mossa(char c, Maze l, Piece t){
+      try {
+         switch (c) {
+            case cNord:
+               l.spostatiNord();
+               break;
+            case cEst:
+               l.spostatiEst();
+               break;
+            case cSud:
+               l.spostatiSud();
+               break;
+            case cWest:
+               l.spostatiWest();
+               break;
+            case cRotateClockwise:
+               t.rotateClockwise();
+               break;
+            case cRotateCounterClockwise:
+               t.rotateCounterClockwise();
+               break;
+            case cInsert:
+               return insert(l, t);
+            case cStats:
+               printPointsAndLF();
+            default:
+               return false;
+         }
+      }catch (MoveNotAllowedException e){
+         return false;
       }
 
       return true;
    }
 
-   private static boolean insert(Labirinto l, Tessera t){
+   private static boolean insert(Maze l, Piece t){
       System.out.println("inserisci il punto cardinale ");
       char c = in.next().charAt(0);
       System.out.println("inserisci la riga o colonna ");
@@ -71,7 +77,7 @@ public class Main {
       if(i<0)  return false;
 
       try{
-         Main.t = l.inserisciTessera(i,c,t);
+         Main.t = l.insertPiece(i,c,t);
       }catch (IllegalArgumentException e){
          System.out.println(e.getMessage());
          return false;
@@ -80,7 +86,7 @@ public class Main {
       return true;
    }
 
-   private static void printBoard(Labirinto l, Tessera t){
+   private static void printBoard(Maze l, Piece t){
       System.out.print("\n\n\n\n\n");
 
       l.print();

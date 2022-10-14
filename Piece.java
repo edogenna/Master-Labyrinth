@@ -1,43 +1,31 @@
 package Labyrinth;
 import java.util.Random;
+import static Labyrinth.Constants.*;
 
-public class Tessera {
-
+public class Piece {
     private boolean nord;
     private boolean est;
     private boolean sud;
     private boolean west;
-    private char tesoro;
-
-    private final String orizzontalFull   = " +------+ ";
-    private final String orizzontalEmpty  = " +      + ";
-    private final String orizzontalBlanks = "      ";
-    private static final char tesoroNessuno = ' ';
-    private static final char tesoroGrande = '@';
-    private static final char tesoroPiccolo = '*';
-    private static final int tesoroGrandeProb = 1;
-    private static final int tesoroPiccoloProb = 3;
-    private static final int punteggioTesoroGrande = 1000;
-    private static final int punteggioTesoroPiccolo = 100;
+    private char tresure;
 
 
-
-    public Tessera(boolean nord, boolean est, boolean sud, boolean west) {
+    public Piece(boolean nord, boolean est, boolean sud, boolean west) {
         this.nord = nord;
         this.est = est;
         this.sud = sud;
         this.west = west;
-        this.tesoro = generaPremio();
+        this.tresure = generateTresure();
     }
 
-    public Tessera(){
+    public Piece(){
         Random rand = new Random();
 
         this.nord = rand.nextBoolean();
         this.est = rand.nextBoolean();
         this.sud = rand.nextBoolean();
         this.west = rand.nextBoolean();
-        this.tesoro = generaPremio();
+        this.tresure = generateTresure();
 
         //elimino il problema delle tessere tutte chiuse
         if(this.nord && this.est && this.sud && this.west){
@@ -55,9 +43,9 @@ public class Tessera {
 
     public void print(){
         if(this.nord)
-            System.out.print(orizzontalFull);
+            System.out.print(ORIZZONTAL_FULL);
         else
-            System.out.print(orizzontalEmpty);
+            System.out.print(ORIZZONTAL_EMPTY);
 
         System.out.print("\n");
 
@@ -69,7 +57,7 @@ public class Tessera {
             else
                 System.out.print(" ");
 
-            System.out.print("  " + this.tesoro + this.tesoro + "  ");
+            System.out.print("  " + this.tresure + this.tresure + "  ");
 
             if(this.est)
                 System.out.print("|");
@@ -81,14 +69,14 @@ public class Tessera {
         }
 
         if(this.sud)
-            System.out.print(orizzontalFull);
+            System.out.print(ORIZZONTAL_FULL);
         else
-            System.out.print(orizzontalEmpty);
+            System.out.print(ORIZZONTAL_EMPTY);
         System.out.print("\n");
 
     }
 
-    public Tessera rotazione9Orario(){
+    public Piece rotateClockwise(){
         boolean tmp;
         tmp = this.west;
         this.west = this.sud;
@@ -98,7 +86,7 @@ public class Tessera {
 
         return this;
     }
-    public Tessera rotazione90AntiOrario(){
+    public Piece rotateCounterClockwise(){
         boolean tmp;
         tmp = this.est;
         this.est = this.sud;
@@ -108,7 +96,7 @@ public class Tessera {
 
         return this;
     }
-    public Tessera rotazione180(){
+    public Piece rotate180(){
         boolean tmp;
         tmp = this.west;
         this.west = this.est;
@@ -121,36 +109,36 @@ public class Tessera {
         return this;
     }
 
-    private static char generaPremio(){
+    private static char generateTresure(){
         Random rand = new Random();
 
         int n = rand.nextInt(10);
-        if(n < tesoroGrandeProb)
-            return tesoroGrande;
-        if(n <= tesoroPiccoloProb)
-            return tesoroPiccolo;
-        return tesoroNessuno;
+        if(n < ODDS_BIG_TRESURE)
+            return BIG_TRESURE;
+        if(n <= ODDS_SMALL_TRESURE)
+            return SMALL_TRESURE;
+        return NONE_TRESURE;
     }
 
     public boolean isNord() { return nord; }
     public boolean isEst() { return est; }
     public boolean isSud() { return sud; }
     public boolean isWest() { return west; }
-    public char getTesoro() { return tesoro; }
+    public char getTresure() { return tresure; }
 
-    public int ritiraCancellaPremio() {
+    public int withdrawDeleteTresure() {
         int p = 0;
 
-        if(tesoro == tesoroNessuno)
+        if(tresure == NONE_TRESURE)
             System.out.println("Non c'è nessun tesoro su questa tessera!");
-        else if(tesoro == tesoroGrande)
-            p = punteggioTesoroGrande;
-        else if(tesoro == tesoroPiccolo)
-            p = punteggioTesoroPiccolo;
+        else if(tresure == BIG_TRESURE)
+            p = POINTS_BIG_TRESURE;
+        else if(tresure == SMALL_TRESURE)
+            p = POINTS_SMALL_TRESURE;
         else
             System.out.println("Questa tessera ha un tesoro non compatibile!");
 
-        tesoro = tesoroNessuno;
+        tresure = NONE_TRESURE;
         return p;
     }
 }
