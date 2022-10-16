@@ -45,11 +45,18 @@ public class Maze {
         tessere[dim-1][dim-1] = generateFinalPosPiece();
     }
     public void print(){
+        printRowNumbers();
         for(int i = 0; i < dim; i++){
             printNord(i);
             printEstAndWest(i);
             printSud(i);
         }
+    }
+    private void printRowNumbers(){
+        for(int i = 0; i < dim; i++){
+            System.out.print("    " + i + "     ");
+        }
+        System.out.print("\n");
     }
     private void printNord(int row){
         for(int col = 0; col < dim; col++){
@@ -94,6 +101,8 @@ public class Maze {
 
                 System.out.print(" ");
             }
+            if(h == 0)
+                System.out.print(" " + row);
             System.out.print("\n");
         }
     }
