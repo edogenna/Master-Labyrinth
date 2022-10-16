@@ -1,21 +1,16 @@
 package Labyrinth;
 
 import Labyrinth.exceptions.MoveNotAllowedException;
-
 import java.util.Scanner;
+import static Labyrinth.Constants.*;
 
 public class Main {
-   static final char cNord = 'w';
-   final static char cSud = 's';
-   final static char cEst = 'd';
-   final static char cWest = 'a';
-   final static char cRotateClockwise = 'm';
-   final static char cRotateCounterClockwise = 'n';
-   final static char cInsert = 'i';
-   final static char cStats = 'p';
+
    private static Scanner in;
    private static Maze l;
    private static Piece t;
+   private static int numberoMosse;
+
    public static void main(String[] args) {
       in = new Scanner(System.in);
       char c;
@@ -23,41 +18,47 @@ public class Main {
       t = new Piece();
       printBoard(l,t);
 
-      while(true) {
+      boolean partitaFinita = false;
+
+      while(!partitaFinita) {
          do {
             System.out.println("cosa vuoi fare? ");
             c = in.next().charAt(0);
          } while (!mossa(c, l, t));
-         printBoard(l,t);
+         numberoMosse++;
+         printBoard(l, t);
+
+         partitaFinita = l.controllaVittoria();
       }
 
-
+      System.out.println("VITTORIA!");
+      System.out.println("Hai ottenuto " + l.getPunteggio() + " in " + numberoMosse + " mosse");
    }
 
    private static boolean mossa(char c, Maze l, Piece t){
       try {
          switch (c) {
-            case cNord:
+            case CHAR_NORD:
                l.spostatiNord();
                break;
-            case cEst:
+            case CHAR_EST:
                l.spostatiEst();
                break;
-            case cSud:
+            case CHAR_SUD:
                l.spostatiSud();
                break;
-            case cWest:
+            case CHAR_WEST:
                l.spostatiWest();
                break;
-            case cRotateClockwise:
+            case CHAR_ROTATE_CLOCKWISE:
                t.rotateClockwise();
                break;
-            case cRotateCounterClockwise:
+            case CHAR_ROTATE_COUNTER_CLOCKWISE:
                t.rotateCounterClockwise();
                break;
-            case cInsert:
+            case CHAR_INSERT:
                return insert(l, t);
-            case cStats:
+            case CHAR_PRINT_STATUS:
                printPointsAndLF();
             default:
                return false;
@@ -87,7 +88,7 @@ public class Main {
    }
 
    private static void printBoard(Maze l, Piece t){
-      System.out.print("\n\n\n\n\n");
+      System.out.print("\n\n\n");
 
       l.print();
       System.out.print("\n\n");

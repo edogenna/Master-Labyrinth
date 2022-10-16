@@ -1,10 +1,12 @@
 package Labyrinth;
 import Labyrinth.exceptions.MoveNotAllowedException;
 
+import java.util.Random;
+
 import static Labyrinth.Constants.*;
 
 public class Maze {
-    private int dim = 5;
+    private int dim;
     private Piece[][] tessere;
     private int punteggio;
     private int vite;
@@ -13,6 +15,7 @@ public class Maze {
 
     //TRUE => CLOSED
     public Maze() {
+        dim = DEFAULT_MAZE_DIM;
         tessere = new Piece[dim][dim];
 
         for(int i = 0; i < dim; i++){
@@ -20,8 +23,27 @@ public class Maze {
                 tessere[i][j] = new Piece();
             }
         }
+
+        adjustMaze();
+    }
+    public Maze(int dim) {
+        this.dim = dim;
+        tessere = new Piece[dim][dim];
+
+        for(int i = 0; i < dim; i++){
+            for(int j = 0; j < dim; j++){
+                tessere[i][j] = new Piece();
+            }
+        }
+
+        adjustMaze();
     }
 
+    private void adjustMaze(){
+        tessere[0][0].deleteTresure();
+        tessere[0][0] = generateInitPosPiece();
+        tessere[dim-1][dim-1] = generateFinalPosPiece();
+    }
     public void print(){
         for(int i = 0; i < dim; i++){
             printNord(i);
@@ -29,7 +51,6 @@ public class Maze {
             printSud(i);
         }
     }
-
     private void printNord(int row){
         for(int col = 0; col < dim; col++){
             if(tessere[row][col].isNord())
@@ -155,14 +176,9 @@ public class Maze {
         return tessere[x][y];
     }
 
-
     public boolean controllaVittoria(){ return rowPos == (dim-1) && colPos == (dim-1); }
-    public int getPunteggio() {
-        return punteggio;
-    }
-    public int getVite() {
-        return vite;
-    }
+    public int getPunteggio() { return punteggio; }
+    public int getVite() { return vite; }
     public int getRowPos() { return rowPos; }
     public int getColPos() { return colPos; }
 
@@ -199,9 +215,38 @@ public class Maze {
         checkPremio();
     }
 
+    private void checkPremio(){ punteggio += tessere[rowPos][colPos].withdrawDeleteTresure(); }
 
-    private void checkPremio(){
-        punteggio += tessere[rowPos][colPos].withdrawDeleteTresure();
+    private Piece generateInitPosPiece(){
+        Random rand = new Random();
+
+        boolean n = rand.nextBoolean();
+        boolean e = rand.nextBoolean();
+        boolean s = rand.nextBoolean();
+        boolean w = rand.nextBoolean();
+
+        if(s && e){
+            boolean sNew = rand.nextBoolean();
+            s = sNew;
+            e = !sNew;
+        }
+
+        return new Piece(n,e,s,w);
     }
+    private Piece generateFinalPosPiece(){
+        Random rand = new Random();
 
+        boolean n = rand.nextBoolean();
+        boolean e = rand.nextBoolean();
+        boolean s = rand.nextBoolean();
+        boolean w = rand.nextBoolean();
+
+        if(n && w){
+            boolean nNew = rand.nextBoolean();
+            n = nNew;
+            w = !nNew;
+        }
+
+        return new Piece(n,e,s,w);
+    }
 }

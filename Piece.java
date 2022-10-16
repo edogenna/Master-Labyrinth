@@ -129,9 +129,9 @@ public class Piece {
     public int withdrawDeleteTresure() {
         int p = 0;
 
-        if(tresure == NONE_TRESURE)
-            System.out.println("Non c'è nessun tesoro su questa tessera!");
-        else if(tresure == BIG_TRESURE)
+        if(tresure == NONE_TRESURE) {
+            //System.out.println("Non c'è nessun tesoro su questa tessera!");
+        }else if(tresure == BIG_TRESURE)
             p = POINTS_BIG_TRESURE;
         else if(tresure == SMALL_TRESURE)
             p = POINTS_SMALL_TRESURE;
@@ -140,5 +140,9 @@ public class Piece {
 
         tresure = NONE_TRESURE;
         return p;
+    }
+
+    public void deleteTresure(){
+        tresure = NONE_TRESURE;
     }
 }

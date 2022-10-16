@@ -5,6 +5,14 @@ public class Constants {
         
     }
 
+    public final static char CHAR_NORD = 'w';
+    public final static char CHAR_SUD = 's';
+    public final static char CHAR_EST = 'd';
+    public final static char CHAR_WEST = 'a';
+    public final static char CHAR_ROTATE_CLOCKWISE = 'm';
+    public final static char CHAR_ROTATE_COUNTER_CLOCKWISE = 'n';
+    public final static char CHAR_INSERT = 'i';
+    public final static char CHAR_PRINT_STATUS = 'p';
     public static final String ORIZZONTAL_FULL = " +------+ ";
     public static final String ORIZZONTAL_EMPTY = " +      + ";
     public static final String ORIZZONTAL_SPACES = "      ";
@@ -17,4 +25,5 @@ public class Constants {
     public static final int POINTS_SMALL_TRESURE = 100;
     public static final String HEAD = "  ()  ";
     public static final String BODY = " -||- ";
+    public static final int DEFAULT_MAZE_DIM = 5;
 }
