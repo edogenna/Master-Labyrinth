@@ -1,5 +1,6 @@
 package Labyrinth;
 import Labyrinth.exceptions.MoveNotAllowedException;
+import Labyrinth.exceptions.NoMoreLifesException;
 
 import java.util.Random;
 
@@ -14,7 +15,8 @@ public class Maze {
     private int colPos;
 
     //TRUE => CLOSED
-    public Maze() {
+    public Maze(int vite) {
+        this.vite = vite;
         dim = DEFAULT_MAZE_DIM;
         tessere = new Piece[dim][dim];
 
@@ -26,7 +28,8 @@ public class Maze {
 
         adjustMaze();
     }
-    public Maze(int dim) {
+    public Maze(int dim, int vite) {
+        this.vite = vite;
         this.dim = dim;
         tessere = new Piece[dim][dim];
 
@@ -62,6 +65,8 @@ public class Maze {
         for(int col = 0; col < dim; col++){
             if(tessere[row][col].isNord())
                 System.out.print(ORIZZONTAL_FULL);
+            else if(tessere[row][col].getTrap() == CardinalPoint.NORD && tessere[row][col].getTrapRevealed())
+                System.out.print(ORIZZONTAL_TRAP);
             else
                 System.out.print(ORIZZONTAL_EMPTY);
         }
@@ -71,6 +76,8 @@ public class Maze {
         for(int col = 0; col < dim; col++){
             if(tessere[row][col].isSud())
                 System.out.print(ORIZZONTAL_FULL);
+            else if(tessere[row][col].getTrap() == CardinalPoint.SUD && tessere[row][col].getTrapRevealed())
+                System.out.print(ORIZZONTAL_TRAP);
             else
                 System.out.print(ORIZZONTAL_EMPTY);
         }
@@ -83,6 +90,8 @@ public class Maze {
 
                 if(tessere[row][col].isWest())
                     System.out.print("|");
+                else if(tessere[row][col].getTrap() == CardinalPoint.WEST && tessere[row][col].getTrapRevealed())
+                    System.out.print("X");
                 else
                     System.out.print(" ");
 
@@ -96,6 +105,8 @@ public class Maze {
 
                 if(tessere[row][col].isEst())
                     System.out.print("|");
+                else if(tessere[row][col].getTrap() == CardinalPoint.EST && tessere[row][col].getTrapRevealed())
+                    System.out.print("X");
                 else
                     System.out.print(" ");
 
@@ -195,6 +206,13 @@ public class Maze {
         if(tessere[rowPos][colPos].isEst() || colPos >= dim-1 || tessere[rowPos][colPos+1].isWest()) {
             throw new MoveNotAllowedException("Movement not allowed");
         }
+
+        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.EST || tessere[rowPos][colPos+1].getTrap() == CardinalPoint.WEST){
+            tessere[rowPos][colPos].revealTrap();
+            tessere[rowPos][colPos+1].revealTrap();
+            caughtTrap();
+        }
+
         colPos++;
 
         checkPremio();
@@ -203,6 +221,13 @@ public class Maze {
         if(tessere[rowPos][colPos].isWest() || colPos <= 0 || tessere[rowPos][colPos-1].isEst()){
             throw new MoveNotAllowedException("Movement not allowed");
         }
+
+        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.WEST || tessere[rowPos][colPos-1].getTrap() == CardinalPoint.EST){
+            tessere[rowPos][colPos].revealTrap();
+            tessere[rowPos][colPos-1].revealTrap();
+            caughtTrap();
+        }
+
         colPos--;
 
         checkPremio();
@@ -211,6 +236,13 @@ public class Maze {
         if(tessere[rowPos][colPos].isSud() || rowPos >= dim-1 || tessere[rowPos+1][colPos].isNord()){
             throw new MoveNotAllowedException("Movement not allowed");
         }
+
+        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.SUD || tessere[rowPos+1][colPos].getTrap() == CardinalPoint.NORD){
+            tessere[rowPos][colPos].revealTrap();
+            tessere[rowPos+1][colPos].revealTrap();
+            caughtTrap();
+        }
+
         rowPos++;
 
         checkPremio();
@@ -219,6 +251,13 @@ public class Maze {
         if(tessere[rowPos][colPos].isNord() || rowPos <= 0 || tessere[rowPos-1][colPos].isSud()){
             throw new MoveNotAllowedException("Movement not allowed");
         }
+
+        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.SUD || tessere[rowPos-1][colPos].getTrap() == CardinalPoint.NORD){
+            tessere[rowPos][colPos].revealTrap();
+            tessere[rowPos-1][colPos].revealTrap();
+            caughtTrap();
+        }
+
         rowPos--;
 
         checkPremio();
@@ -258,4 +297,12 @@ public class Maze {
 
         return new Piece(n,e,s,w);
     }
+
+    private void caughtTrap() {
+        System.out.println("Oh no, sei passato su una trappola!");
+        vite--;
+        if(vite == 0)
+            throw new NoMoreLifesException("Hai finito le vite!");
+    }
+
 }

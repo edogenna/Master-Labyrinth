@@ -8,7 +8,8 @@ public class Piece {
     private boolean sud;
     private boolean west;
     private char tresure;
-
+    private CardinalPoint trap;
+    private boolean trapRevealed;
 
     public Piece(boolean nord, boolean est, boolean sud, boolean west) {
         this.nord = nord;
@@ -16,6 +17,8 @@ public class Piece {
         this.sud = sud;
         this.west = west;
         this.tresure = generateTresure();
+        this.trap = generateTrap(nord, est, sud, west);
+        this.trapRevealed = false;
     }
 
     public Piece(){
@@ -26,6 +29,7 @@ public class Piece {
         this.sud = rand.nextBoolean();
         this.west = rand.nextBoolean();
         this.tresure = generateTresure();
+        this.trapRevealed = false;
 
         //elimino il problema delle tessere tutte chiuse
         if(this.nord && this.est && this.sud && this.west){
@@ -40,6 +44,41 @@ public class Piece {
         }
     }
 
+
+    private CardinalPoint generateTrap(boolean n, boolean e,boolean s,boolean w){
+        Random rand = new Random();
+        int noTrap = rand.nextInt(10);
+        if(noTrap < ODDS_TRAP)
+            return CardinalPoint.NONE;
+
+        int conta = 0;
+        if(!n) conta++;
+        if(!e) conta++;
+        if(!s) conta++;
+        if(!w) conta++;
+
+        int num = rand.nextInt(conta);
+        CardinalPoint[] ar = new CardinalPoint[conta];
+        conta--;
+        if(!n){
+            ar[conta] = CardinalPoint.NORD;
+            conta--;
+        }
+        if(!e){
+            ar[conta] = CardinalPoint.EST;
+            conta--;
+        }
+        if(!s){
+            ar[conta] = CardinalPoint.SUD;
+            conta--;
+        }
+        if(!w){
+            ar[conta] = CardinalPoint.WEST;
+            conta--;
+        }
+
+        return ar[num];
+    }
 
     public void print(){
         if(this.nord)
@@ -125,6 +164,8 @@ public class Piece {
     public boolean isSud() { return sud; }
     public boolean isWest() { return west; }
     public char getTresure() { return tresure; }
+    public CardinalPoint getTrap() { return trap;}
+    public boolean getTrapRevealed() { return trapRevealed; }
 
     public int withdrawDeleteTresure() {
         int p = 0;
@@ -142,7 +183,7 @@ public class Piece {
         return p;
     }
 
-    public void deleteTresure(){
-        tresure = NONE_TRESURE;
-    }
+    public void deleteTresure(){ tresure = NONE_TRESURE; }
+
+    public void revealTrap(){ this.trapRevealed = false; }
 }

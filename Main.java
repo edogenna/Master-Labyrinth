@@ -1,6 +1,8 @@
 package Labyrinth;
 
 import Labyrinth.exceptions.MoveNotAllowedException;
+import Labyrinth.exceptions.NoMoreLifesException;
+
 import java.util.Scanner;
 import static Labyrinth.Constants.*;
 
@@ -14,25 +16,34 @@ public class Main {
    public static void main(String[] args) {
       in = new Scanner(System.in);
       char c;
-      l = new Maze();
+      System.out.println("Inserisci il numero di vite");
+      int num = in.nextInt();
+      l = new Maze(num);
       t = new Piece();
       printBoard(l,t);
 
       boolean partitaFinita = false;
 
       while(!partitaFinita) {
-         do {
-            System.out.println("cosa vuoi fare? (digita h per aiuto)");
-            c = in.next().charAt(0);
-         } while (!mossa(c, l, t));
-         numberoMosse++;
-         printBoard(l, t);
+         try {
+            do {
+               System.out.println("cosa vuoi fare? (digita h per aiuto)");
+               c = in.next().charAt(0);
+            } while (!mossa(c, l, t));
+            numberoMosse++;
+            printBoard(l, t);
 
-         partitaFinita = l.controllaVittoria();
+            partitaFinita = l.controllaVittoria();
+         }catch (NoMoreLifesException e){
+            System.out.println("Hai perso!");
+            System.out.println("Hai ottenuto " + l.getPunteggio() + " in " + numberoMosse + " mosse");
+            return;
+         }
       }
 
+
       System.out.println("VITTORIA!");
-      System.out.println("Hai ottenuto " + l.getPunteggio() + " in " + numberoMosse + " mosse");
+      System.out.println("Hai ottenuto " + l.getPunteggio() + " punti in " + numberoMosse + " mosse");
    }
 
    private static boolean mossa(char c, Maze l, Piece t){
@@ -60,8 +71,10 @@ public class Main {
                return insert(l, t);
             case CHAR_PRINT_STATUS:
                printPointsAndLF();
+               break;
             case CHAR_HELP:
                printHelp();
+               break;
             default:
                return false;
          }
