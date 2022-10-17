@@ -22,7 +22,7 @@ public class Main {
 
       while(!partitaFinita) {
          do {
-            System.out.println("cosa vuoi fare? ");
+            System.out.println("cosa vuoi fare? (digita h per aiuto)");
             c = in.next().charAt(0);
          } while (!mossa(c, l, t));
          numberoMosse++;
@@ -60,6 +60,8 @@ public class Main {
                return insert(l, t);
             case CHAR_PRINT_STATUS:
                printPointsAndLF();
+            case CHAR_HELP:
+               printHelp();
             default:
                return false;
          }
@@ -101,6 +103,14 @@ public class Main {
       System.out.print("\n");
       System.out.println("Life: " + l.getVite() + "  Punti: " + l.getPunteggio());
 
+   }
+
+   private static void printHelp(){
+      System.out.println("Usa w,a,s,d per muoverti nel tabellone");
+      System.out.println("Per ruotare la tessera esterna in senso orario usa m e in senso antiorario usa n");
+      System.out.println("Se vuoi inserire la tessera digita i");
+      System.out.println("Se vuoi stampare il tuo punteggio e le vite rimanenti digita p");
+      System.out.println("Il tuo obiettivo è arrivare nella tessera in basso a destra vivo");
    }
 }
 

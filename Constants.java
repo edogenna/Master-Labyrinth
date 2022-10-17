@@ -1,9 +1,7 @@
 package Labyrinth;
 
 public class Constants {
-    private Constants(){
-        
-    }
+    private Constants(){ }
 
     public final static char CHAR_NORD = 'w';
     public final static char CHAR_SUD = 's';
@@ -13,6 +11,7 @@ public class Constants {
     public final static char CHAR_ROTATE_COUNTER_CLOCKWISE = 'n';
     public final static char CHAR_INSERT = 'i';
     public final static char CHAR_PRINT_STATUS = 'p';
+    public final static char CHAR_HELP = 'h';
     public static final String ORIZZONTAL_FULL = " +------+ ";
     public static final String ORIZZONTAL_EMPTY = " +      + ";
     public static final String ORIZZONTAL_SPACES = "      ";
