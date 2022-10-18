@@ -82,9 +82,9 @@ public class Piece {
 
     public void print(){
         if(this.nord)
-            System.out.print(ORIZZONTAL_FULL);
+            System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
         else
-            System.out.print(ORIZZONTAL_EMPTY);
+            System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
 
         System.out.print("\n");
 
@@ -108,34 +108,30 @@ public class Piece {
         }
 
         if(this.sud)
-            System.out.print(ORIZZONTAL_FULL);
+            System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
         else
-            System.out.print(ORIZZONTAL_EMPTY);
+            System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
         System.out.print("\n");
 
     }
 
-    public Piece rotateClockwise(){
+    public void rotateClockwise(){
         boolean tmp;
         tmp = this.west;
         this.west = this.sud;
         this.sud = this.est;
         this.est = this.nord;
         this.nord = tmp;
-
-        return this;
     }
-    public Piece rotateCounterClockwise(){
+    public void rotateCounterClockwise(){
         boolean tmp;
         tmp = this.est;
         this.est = this.sud;
         this.sud = this.west;
         this.west = this.nord;
         this.nord = tmp;
-
-        return this;
     }
-    public Piece rotate180(){
+    public void rotate180(){
         boolean tmp;
         tmp = this.west;
         this.west = this.est;
@@ -144,8 +140,6 @@ public class Piece {
         tmp = this.sud;
         this.sud = this.nord;
         this.nord = tmp;
-
-        return this;
     }
 
     private static char generateTresure(){
@@ -166,6 +160,32 @@ public class Piece {
     public char getTresure() { return tresure; }
     public CardinalPoint getTrap() { return trap;}
     public boolean getTrapRevealed() { return trapRevealed; }
+
+    public char[][] getMatrixPrint(){
+        char[][] m = new char[ROWS_IN_A_PIECE][];
+        if(nord)
+            m[0] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+        else
+            m[0] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+
+        for(int i = 1; i < ROWS_IN_A_PIECE-1; i++){
+            if(est && west)
+                m[i] = ORIZZONTAL_WEST_TRUE_EST_TRUE.toCharArray();
+            else if(est)
+                m[i] = ORIZZONTAL_WEST_FALSE_EST_TRUE.toCharArray();
+            else if(west)
+                m[i] = ORIZZONTAL_WEST_TRUE_EST_FALSE.toCharArray();
+            else
+                m[i] = ORIZZONTAL_WEST_FALSE_EST_FALSE.toCharArray();
+        }
+
+        if(sud)
+            m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+        else
+            m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+
+        return m;
+    }
 
     public int withdrawDeleteTresure() {
         int p = 0;

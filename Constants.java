@@ -15,10 +15,15 @@ public class Constants {
     public final static char CHAR_INSERT = 'i';
     public final static char CHAR_PRINT_STATUS = 'p';
     public final static char CHAR_HELP = 'h';
-    public static final String ORIZZONTAL_FULL = " +------+ ";
-    public static final String ORIZZONTAL_EMPTY = " +      + ";
+    public static final String ORIZZONTAL_NORD_SUD_TRUE = " +------+ ";
+    public static final String ORIZZONTAL_NORD_SUD_FALSE = " +      + ";
     public static final String ORIZZONTAL_SPACES = "      ";
     public static final String ORIZZONTAL_TRAP = " +  XX  + ";
+    public static final String ORIZZONTAL_WEST_TRUE_EST_TRUE = " |      | ";
+    public static final String ORIZZONTAL_WEST_TRUE_EST_FALSE = " |        ";
+    public static final String ORIZZONTAL_WEST_FALSE_EST_TRUE = "        | ";
+    public static final String ORIZZONTAL_WEST_FALSE_EST_FALSE = "          ";
+
     public static final char NONE_TRESURE = ' ';
     public static final char BIG_TRESURE = '@';
     public static final char SMALL_TRESURE = '*';
@@ -30,4 +35,15 @@ public class Constants {
     public static final String HEAD = "  ()  ";
     public static final String BODY = " -||- ";
     public static final int DEFAULT_MAZE_DIM = 5;
+    public static final int ROWS_IN_A_PIECE = 4;
+    public static final int COLUMNS_IN_A_PIECE = 10;
+
+    public static void printMatrix(char [][] m){
+        for (char[] chars : m) {
+            for (char aChar : chars) {
+                System.out.print(aChar);
+            }
+            System.out.print("\n");
+        }
+    }
 }

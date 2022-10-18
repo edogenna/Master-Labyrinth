@@ -7,7 +7,6 @@ import java.util.Scanner;
 import static Labyrinth.Constants.*;
 
 public class Main {
-
    private static Scanner in;
    private static Maze l;
    private static Piece t;

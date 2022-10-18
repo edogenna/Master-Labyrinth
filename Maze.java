@@ -64,22 +64,22 @@ public class Maze {
     private void printNord(int row){
         for(int col = 0; col < dim; col++){
             if(tessere[row][col].isNord())
-                System.out.print(ORIZZONTAL_FULL);
+                System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
             else if(tessere[row][col].getTrap() == CardinalPoint.NORD && tessere[row][col].getTrapRevealed())
                 System.out.print(ORIZZONTAL_TRAP);
             else
-                System.out.print(ORIZZONTAL_EMPTY);
+                System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
         }
         System.out.print("\n");
     }
     private void printSud(int row){
         for(int col = 0; col < dim; col++){
             if(tessere[row][col].isSud())
-                System.out.print(ORIZZONTAL_FULL);
+                System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
             else if(tessere[row][col].getTrap() == CardinalPoint.SUD && tessere[row][col].getTrapRevealed())
                 System.out.print(ORIZZONTAL_TRAP);
             else
-                System.out.print(ORIZZONTAL_EMPTY);
+                System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
         }
         System.out.print("\n");
     }
@@ -116,6 +116,14 @@ public class Maze {
                 System.out.print(" " + row);
             System.out.print("\n");
         }
+    }
+
+
+    public char[][] getMatrixPrint(){
+        char [][] m = new char[ROWS_IN_A_PIECE*dim][];
+
+
+        return m;
     }
 
     public void printBooleanValues(){
