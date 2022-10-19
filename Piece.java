@@ -7,9 +7,19 @@ public class Piece {
     private boolean est;
     private boolean sud;
     private boolean west;
-    private char tresure;
+    private Tresure tresure;
     private CardinalPoint trap;
     private boolean trapRevealed;
+
+    public Piece(boolean nord, boolean est, boolean sud, boolean west, CardinalPoint cardinalTrap, Tresure tresure) {
+        this.nord = nord;
+        this.est = est;
+        this.sud = sud;
+        this.west = west;
+        this.tresure = tresure;
+        this.trap = cardinalTrap;
+        this.trapRevealed = false;
+    }
 
     public Piece(boolean nord, boolean est, boolean sud, boolean west) {
         this.nord = nord;
@@ -29,7 +39,7 @@ public class Piece {
         this.sud = rand.nextBoolean();
         this.west = rand.nextBoolean();
         this.tresure = generateTresure();
-        this.trapRevealed = false;
+
 
         //elimino il problema delle tessere tutte chiuse
         if(this.nord && this.est && this.sud && this.west){
@@ -42,13 +52,16 @@ public class Piece {
                 default -> System.out.println("Errore rigenerazione tessera tutta chiusa!");
             }
         }
+
+        this.trap = generateTrap(nord, est, sud, west);
+        this.trapRevealed = false;
     }
 
 
     private CardinalPoint generateTrap(boolean n, boolean e,boolean s,boolean w){
         Random rand = new Random();
         int noTrap = rand.nextInt(10);
-        if(noTrap < ODDS_TRAP)
+        if(noTrap >= ODDS_TRAP)
             return CardinalPoint.NONE;
 
         int conta = 0;
@@ -142,22 +155,22 @@ public class Piece {
         this.nord = tmp;
     }
 
-    private static char generateTresure(){
+    private static Tresure generateTresure(){
         Random rand = new Random();
 
         int n = rand.nextInt(10);
         if(n < ODDS_BIG_TRESURE)
-            return BIG_TRESURE;
+            return Tresure.BIG;
         if(n <= ODDS_SMALL_TRESURE)
-            return SMALL_TRESURE;
-        return NONE_TRESURE;
+            return Tresure.SMALL;
+        return Tresure.NONE;
     }
 
     public boolean isNord() { return nord; }
     public boolean isEst() { return est; }
     public boolean isSud() { return sud; }
     public boolean isWest() { return west; }
-    public char getTresure() { return tresure; }
+    public Tresure getTresure() { return tresure; }
     public CardinalPoint getTrap() { return trap;}
     public boolean getTrapRevealed() { return trapRevealed; }
 
@@ -166,7 +179,7 @@ public class Piece {
         if(nord)
             m[0] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
         else
-            m[0] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+            m[0] = ORIZZONTAL_NORD_SUD_FALSE.toCharArray();
 
         for(int i = 1; i < ROWS_IN_A_PIECE-1; i++){
             if(est && west)
@@ -182,28 +195,70 @@ public class Piece {
         if(sud)
             m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
         else
-            m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+            m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_FALSE.toCharArray();
 
         return m;
+    }
+
+    public char[][] getMatrixPrintWithElementes(){
+        char [][]m = getMatrixPrint();
+        switch (tresure){
+            case BIG -> setCentreOfPiece(m, BIG_TRESURE);
+            case SMALL -> setCentreOfPiece(m, SMALL_TRESURE);
+        }
+
+        if(trapRevealed){
+            switch (trap){
+                case NORD -> {
+                    m[0][4] = CHAR_TRAP;
+                    m[0][5] = CHAR_TRAP;
+                }
+                case EST -> {
+                    m[1][8] = CHAR_TRAP;
+                    m[2][8] = CHAR_TRAP;
+                }
+                case SUD -> {
+                    m[3][4] = CHAR_TRAP;
+                    m[3][5] = CHAR_TRAP;
+                }
+                case WEST -> {
+                    m[1][1] = CHAR_TRAP;
+                    m[2][1] = CHAR_TRAP;
+                }
+            }
+        }
+
+        return m;
+    }
+
+    private void setCentreOfPiece(char m[][], char c){
+        m[1][4] = c;
+        m[1][5] = c;
+        m[2][4] = c;
+        m[2][5] = c;
     }
 
     public int withdrawDeleteTresure() {
         int p = 0;
 
-        if(tresure == NONE_TRESURE) {
+        if(tresure == Tresure.NONE) {
             //System.out.println("Non c'è nessun tesoro su questa tessera!");
-        }else if(tresure == BIG_TRESURE)
+        }else if(tresure == Tresure.BIG)
             p = POINTS_BIG_TRESURE;
-        else if(tresure == SMALL_TRESURE)
+        else if(tresure == Tresure.SMALL)
             p = POINTS_SMALL_TRESURE;
         else
             System.out.println("Questa tessera ha un tesoro non compatibile!");
 
-        tresure = NONE_TRESURE;
+        tresure = Tresure.NONE;
         return p;
     }
 
-    public void deleteTresure(){ tresure = NONE_TRESURE; }
+    public void deleteTresure(){ tresure = Tresure.NONE; }
 
-    public void revealTrap(){ this.trapRevealed = false; }
+    public void revealTrap(){
+        if(this.trap == CardinalPoint.NONE)
+            return;
+        this.trapRevealed = true;
+    }
 }

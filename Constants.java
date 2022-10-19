@@ -6,6 +6,10 @@ public class Constants {
     public enum CardinalPoint {
         NONE, NORD, EST, SUD, WEST
     }
+
+    public enum Tresure{
+        NONE, SMALL, BIG;
+    }
     public final static char CHAR_NORD = 'w';
     public final static char CHAR_SUD = 's';
     public final static char CHAR_EST = 'd';
@@ -27,6 +31,7 @@ public class Constants {
     public static final char NONE_TRESURE = ' ';
     public static final char BIG_TRESURE = '@';
     public static final char SMALL_TRESURE = '*';
+    public static final char CHAR_TRAP = 'X';
     public static final int ODDS_BIG_TRESURE = 1;
     public static final int ODDS_SMALL_TRESURE = 3;
     public static final int ODDS_TRAP = 1;
@@ -44,6 +49,24 @@ public class Constants {
                 System.out.print(aChar);
             }
             System.out.print("\n");
+        }
+    }
+
+    public static void printMatrixWithIndex(char [][] m, int mod){
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[i].length; j++) {
+                System.out.print(m[i][j]);
+            }
+            if(i%mod == 0)
+                System.out.print(" " + i/4);
+            System.out.print("\n");
+        }
+    }
+
+
+    public static void copyMatrix(char [][]dest, int xInitPos, int yInitPos, char [][]src){
+        for(int i = 0; i < src.length; i++){
+            System.arraycopy(src[i], 0, dest[xInitPos + i], yInitPos, src[i].length);
         }
     }
 }

@@ -1,35 +1,15 @@
 package Labyrinth;
-import Labyrinth.exceptions.MoveNotAllowedException;
-import Labyrinth.exceptions.NoMoreLifesException;
 
 import java.util.Random;
 
 import static Labyrinth.Constants.*;
 
 public class Maze {
-    private int dim;
+    private final int dim;
     private Piece[][] tessere;
-    private int punteggio;
-    private int vite;
-    private int rowPos;
-    private int colPos;
 
     //TRUE => CLOSED
-    public Maze(int vite) {
-        this.vite = vite;
-        dim = DEFAULT_MAZE_DIM;
-        tessere = new Piece[dim][dim];
-
-        for(int i = 0; i < dim; i++){
-            for(int j = 0; j < dim; j++){
-                tessere[i][j] = new Piece();
-            }
-        }
-
-        adjustMaze();
-    }
-    public Maze(int dim, int vite) {
-        this.vite = vite;
+    public Maze(int dim) {
         this.dim = dim;
         tessere = new Piece[dim][dim];
 
@@ -47,82 +27,23 @@ public class Maze {
         tessere[0][0] = generateInitPosPiece();
         tessere[dim-1][dim-1] = generateFinalPosPiece();
     }
-    public void print(){
-        printRowNumbers();
-        for(int i = 0; i < dim; i++){
-            printNord(i);
-            printEstAndWest(i);
-            printSud(i);
-        }
-    }
-    private void printRowNumbers(){
-        for(int i = 0; i < dim; i++){
-            System.out.print("    " + i + "     ");
-        }
-        System.out.print("\n");
-    }
-    private void printNord(int row){
-        for(int col = 0; col < dim; col++){
-            if(tessere[row][col].isNord())
-                System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
-            else if(tessere[row][col].getTrap() == CardinalPoint.NORD && tessere[row][col].getTrapRevealed())
-                System.out.print(ORIZZONTAL_TRAP);
-            else
-                System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
-        }
-        System.out.print("\n");
-    }
-    private void printSud(int row){
-        for(int col = 0; col < dim; col++){
-            if(tessere[row][col].isSud())
-                System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
-            else if(tessere[row][col].getTrap() == CardinalPoint.SUD && tessere[row][col].getTrapRevealed())
-                System.out.print(ORIZZONTAL_TRAP);
-            else
-                System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
-        }
-        System.out.print("\n");
-    }
-    private void printEstAndWest(int row){
-        for(int h = 0; h < 2; h++){
-            for(int col = 0; col < dim; col++){
-                System.out.print(" ");
-
-                if(tessere[row][col].isWest())
-                    System.out.print("|");
-                else if(tessere[row][col].getTrap() == CardinalPoint.WEST && tessere[row][col].getTrapRevealed())
-                    System.out.print("X");
-                else
-                    System.out.print(" ");
-
-                if(rowPos == row && colPos == col){
-                    if(h == 0)
-                        System.out.print(HEAD);
-                    else if(h == 1)
-                        System.out.print(BODY);
-                }else
-                    System.out.print("  " + tessere[row][col].getTresure() + tessere[row][col].getTresure() + "  ");
-
-                if(tessere[row][col].isEst())
-                    System.out.print("|");
-                else if(tessere[row][col].getTrap() == CardinalPoint.EST && tessere[row][col].getTrapRevealed())
-                    System.out.print("X");
-                else
-                    System.out.print(" ");
-
-                System.out.print(" ");
-            }
-            if(h == 0)
-                System.out.print(" " + row);
-            System.out.print("\n");
-        }
-    }
-
 
     public char[][] getMatrixPrint(){
-        char [][] m = new char[ROWS_IN_A_PIECE*dim][];
-
-
+        char [][] m = new char[ROWS_IN_A_PIECE*dim][COLUMNS_IN_A_PIECE*dim];
+        for(int i = 0; i < dim; i++){
+            for(int j = 0; j < dim; j++){
+                copyMatrix(m,i*ROWS_IN_A_PIECE,j*COLUMNS_IN_A_PIECE,tessere[i][j].getMatrixPrint());
+            }
+        }
+        return m;
+    }
+    public char[][] getMatricPrintWithElements(){
+        char [][] m = new char[ROWS_IN_A_PIECE*dim][COLUMNS_IN_A_PIECE*dim];
+        for(int i = 0; i < dim; i++){
+            for(int j = 0; j < dim; j++){
+                copyMatrix(m,i*ROWS_IN_A_PIECE,j*COLUMNS_IN_A_PIECE,tessere[i][j].getMatrixPrintWithElementes());
+            }
+        }
         return m;
     }
 
@@ -136,143 +57,14 @@ public class Maze {
         }
     }
 
-    public Piece insertPiece(int index, char cardinalPoint, Piece tesseraDaInserire){
-        if(index < 0 || index >= dim || index % 2 == 0)
-            throw new IllegalArgumentException(index + " is not a valid index. It must be a even number and a valid position. ");
-
-        cardinalPoint = Character.toLowerCase(cardinalPoint);
-        if(cardinalPoint != 'n' && cardinalPoint != 'e' && cardinalPoint != 's' && cardinalPoint != 'w')
-            throw new IllegalArgumentException(cardinalPoint + " is not a valid cardinal point. It must be nord, est, sud or west");
-
-        Piece tesseraUscente = null;
-
-        switch (cardinalPoint){
-            case 'e' -> {
-                tesseraUscente = tessere[index][0];
-                for(int i = 0; i < dim - 1; i++)
-                    tessere[index][i] = tessere[index][i+1];
-                tessere[index][dim-1] = tesseraDaInserire;
-
-                if(index == rowPos) {
-                    colPos--;
-                    if(colPos < 0)
-                        colPos = dim-1;
-                }
-            }
-            case 'n' -> {
-                tesseraUscente = tessere[dim-1][index];
-                for(int i = dim - 1; i > 0; i--)
-                    tessere[i][index] = tessere[i-1][index];
-                tessere[0][index] = tesseraDaInserire;
-
-                if(index == colPos) {
-                    rowPos++;
-                    if(rowPos >= dim)
-                        rowPos = 0;
-                }
-            }
-            case 's' -> {
-                tesseraUscente = tessere[0][index];
-                for(int i = 0; i < dim - 1; i++)
-                    tessere[i][index] = tessere[i+1][index];
-                tessere[dim-1][index] = tesseraDaInserire;
-
-                if(index == colPos) {
-                    rowPos--;
-                    if(rowPos < 0)
-                        rowPos = dim-1;
-                }
-            }
-            case 'w' -> {
-                tesseraUscente = tessere[index][dim-1];
-                for(int i = dim - 1; i > 0; i--)
-                    tessere[index][i] = tessere[index][i-1];
-                tessere[index][0] = tesseraDaInserire;
-
-                if(index == rowPos) {
-                    colPos++;
-                    if(colPos >= dim)
-                        colPos = 0;
-                }
-            }
-        }
-
-        return tesseraUscente;
+    public Piece insertPiece(int x, int y, Piece tesseraDaInserire){
+        Piece uscente = tessere[x][y];
+        tessere[x][y] = tesseraDaInserire;
+        return uscente;
     }
 
-    public Piece getTessera(int x, int y){
-        return tessere[x][y];
-    }
-
-    public boolean controllaVittoria(){ return rowPos == (dim-1) && colPos == (dim-1); }
-    public int getPunteggio() { return punteggio; }
-    public int getVite() { return vite; }
-    public int getRowPos() { return rowPos; }
-    public int getColPos() { return colPos; }
-
-    public void spostatiEst(){
-        if(tessere[rowPos][colPos].isEst() || colPos >= dim-1 || tessere[rowPos][colPos+1].isWest()) {
-            throw new MoveNotAllowedException("Movement not allowed");
-        }
-
-        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.EST || tessere[rowPos][colPos+1].getTrap() == CardinalPoint.WEST){
-            tessere[rowPos][colPos].revealTrap();
-            tessere[rowPos][colPos+1].revealTrap();
-            caughtTrap();
-        }
-
-        colPos++;
-
-        checkPremio();
-    }
-    public void spostatiWest(){
-        if(tessere[rowPos][colPos].isWest() || colPos <= 0 || tessere[rowPos][colPos-1].isEst()){
-            throw new MoveNotAllowedException("Movement not allowed");
-        }
-
-        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.WEST || tessere[rowPos][colPos-1].getTrap() == CardinalPoint.EST){
-            tessere[rowPos][colPos].revealTrap();
-            tessere[rowPos][colPos-1].revealTrap();
-            caughtTrap();
-        }
-
-        colPos--;
-
-        checkPremio();
-    }
-    public void spostatiSud(){
-        if(tessere[rowPos][colPos].isSud() || rowPos >= dim-1 || tessere[rowPos+1][colPos].isNord()){
-            throw new MoveNotAllowedException("Movement not allowed");
-        }
-
-        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.SUD || tessere[rowPos+1][colPos].getTrap() == CardinalPoint.NORD){
-            tessere[rowPos][colPos].revealTrap();
-            tessere[rowPos+1][colPos].revealTrap();
-            caughtTrap();
-        }
-
-        rowPos++;
-
-        checkPremio();
-    }
-    public void spostatiNord(){
-        if(tessere[rowPos][colPos].isNord() || rowPos <= 0 || tessere[rowPos-1][colPos].isSud()){
-            throw new MoveNotAllowedException("Movement not allowed");
-        }
-
-        if(tessere[rowPos][colPos].getTrap() == CardinalPoint.SUD || tessere[rowPos-1][colPos].getTrap() == CardinalPoint.NORD){
-            tessere[rowPos][colPos].revealTrap();
-            tessere[rowPos-1][colPos].revealTrap();
-            caughtTrap();
-        }
-
-        rowPos--;
-
-        checkPremio();
-    }
-
-    private void checkPremio(){ punteggio += tessere[rowPos][colPos].withdrawDeleteTresure(); }
-
+    public Piece getPiece(int x, int y){ return tessere[x][y]; }
+    public int getDim() { return dim; }
     private Piece generateInitPosPiece(){
         Random rand = new Random();
 
@@ -305,12 +97,4 @@ public class Maze {
 
         return new Piece(n,e,s,w);
     }
-
-    private void caughtTrap() {
-        System.out.println("Oh no, sei passato su una trappola!");
-        vite--;
-        if(vite == 0)
-            throw new NoMoreLifesException("Hai finito le vite!");
-    }
-
 }
