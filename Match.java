@@ -17,6 +17,11 @@ public class Match {
     private final Scanner in;
     private int numeroMosse;
 
+    public Match(Scanner in){
+        this(-1,in);
+        this.setVite();
+    }
+
     public Match(int vite, Scanner in){
         this.vite = vite;
         this.punteggio = 0;
@@ -28,6 +33,11 @@ public class Match {
         this.numeroMosse = 0;
     }
 
+    private void setVite(){
+        System.out.println("Inserisci il numero di vite");
+        this.vite = in.nextInt();
+    }
+
     private void checkPremio(){ punteggio += maze.getPiece(rowPos,colPos).withdrawDeleteTresure(); }
     public boolean controllaVittoria(){ return rowPos == (maze.getDim()-1) && colPos == (maze.getDim()-1); }
     public int getPunteggio() { return punteggio; }
@@ -37,7 +47,7 @@ public class Match {
     private void caughtTrap() {
         System.out.println("Oh no, sei passato su una trappola!");
         vite--;
-        if(vite == 0)
+        if(vite <= 0)
             throw new NoMoreLifesException("Hai finito le vite!");
     }
     public void spostatiEst(){
@@ -106,23 +116,30 @@ public class Match {
             switch (c) {
                 case CHAR_NORD:
                     spostatiNord();
+                    numeroMosse++;
                     break;
                 case CHAR_EST:
                     spostatiEst();
+                    numeroMosse++;
                     break;
                 case CHAR_SUD:
                     spostatiSud();
+                    numeroMosse++;
                     break;
                 case CHAR_WEST:
                     spostatiWest();
+                    numeroMosse++;
                     break;
                 case CHAR_ROTATE_CLOCKWISE:
                     pieceExternal.rotateClockwise();
+                    numeroMosse++;
                     break;
                 case CHAR_ROTATE_COUNTER_CLOCKWISE:
                     pieceExternal.rotateCounterClockwise();
+                    numeroMosse++;
                     break;
                 case CHAR_INSERT:
+                    numeroMosse++;
                     return insert();
                 case CHAR_PRINT_STATUS:
                     printPointsAndLF();
@@ -257,7 +274,6 @@ public class Match {
                     System.out.println("cosa vuoi fare? (digita h per aiuto)");
                     c = in.next().charAt(0);
                 } while (!mossa(c));
-                numeroMosse++;
                 printBoard();
 
                 partitaFinita = controllaVittoria();

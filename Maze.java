@@ -19,11 +19,6 @@ public class Maze {
             }
         }
 
-        adjustMaze();
-    }
-
-    private void adjustMaze(){
-        tessere[0][0].deleteTresure();
         tessere[0][0] = generateInitPosPiece();
         tessere[dim-1][dim-1] = generateFinalPosPiece();
     }
@@ -79,7 +74,7 @@ public class Maze {
             e = !sNew;
         }
 
-        return new Piece(n,e,s,w);
+        return new Piece(n,e,s,w,Tresure.NONE);
     }
     private Piece generateFinalPosPiece(){
         Random rand = new Random();

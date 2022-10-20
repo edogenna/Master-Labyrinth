@@ -1,2 +1,3 @@
 -rendere la matrice permanente e con un flag indicare se è cambiata
 - print è contata nelle mosse?
+- controllare la validità delle vite

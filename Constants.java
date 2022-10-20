@@ -58,7 +58,7 @@ public class Constants {
                 System.out.print(m[i][j]);
             }
             if(i%mod == 0)
-                System.out.print(" " + i/4);
+                System.out.print(" " + i/mod);
             System.out.print("\n");
         }
     }

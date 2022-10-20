@@ -22,13 +22,11 @@ public class Piece {
     }
 
     public Piece(boolean nord, boolean est, boolean sud, boolean west) {
-        this.nord = nord;
-        this.est = est;
-        this.sud = sud;
-        this.west = west;
-        this.tresure = generateTresure();
-        this.trap = generateTrap(nord, est, sud, west);
-        this.trapRevealed = false;
+        this(nord,est,sud,west,generateTrap(nord, est, sud, west), generateTresure());
+    }
+
+    public Piece(boolean nord, boolean est, boolean sud, boolean west, Tresure tresure){
+        this(nord,est,sud,west,generateTrap(nord, est, sud, west), tresure);
     }
 
     public Piece(){
@@ -58,7 +56,7 @@ public class Piece {
     }
 
 
-    private CardinalPoint generateTrap(boolean n, boolean e,boolean s,boolean w){
+    private static CardinalPoint generateTrap(boolean n, boolean e,boolean s,boolean w){
         Random rand = new Random();
         int noTrap = rand.nextInt(10);
         if(noTrap >= ODDS_TRAP)
@@ -254,7 +252,7 @@ public class Piece {
         return p;
     }
 
-    public void deleteTresure(){ tresure = Tresure.NONE; }
+    public void deleteTresure(){ this.tresure = Tresure.NONE; }
 
     public void revealTrap(){
         if(this.trap == CardinalPoint.NONE)
