@@ -27,25 +27,27 @@ public class Maze {
         this(DEFAULT_MAZE_DIM);
     }
 
+    @SuppressWarnings("unused")
     public char[][] getMatrixPrint(){
-        char [][] m = new char[ROWS_IN_A_PIECE*dim][COLUMNS_IN_A_PIECE*dim];
+        char [][] m = new char[Piece.ROWS_IN_A_PIECE*dim][Piece.COLUMNS_IN_A_PIECE*dim];
         for(int i = 0; i < dim; i++){
             for(int j = 0; j < dim; j++){
-                copyMatrix(m,i*ROWS_IN_A_PIECE,j*COLUMNS_IN_A_PIECE,tessere[i][j].getMatrixPrint());
+                copyMatrix(m,i*Piece.ROWS_IN_A_PIECE,j*Piece.COLUMNS_IN_A_PIECE,tessere[i][j].getMatrixPrint());
             }
         }
         return m;
     }
     public char[][] getMatricPrintWithElements(){
-        char [][] m = new char[ROWS_IN_A_PIECE*dim][COLUMNS_IN_A_PIECE*dim];
+        char [][] m = new char[Piece.ROWS_IN_A_PIECE*dim][Piece.COLUMNS_IN_A_PIECE*dim];
         for(int i = 0; i < dim; i++){
             for(int j = 0; j < dim; j++){
-                copyMatrix(m,i*ROWS_IN_A_PIECE,j*COLUMNS_IN_A_PIECE,tessere[i][j].getMatrixPrintWithElementes());
+                copyMatrix(m,i*Piece.ROWS_IN_A_PIECE,j*Piece.COLUMNS_IN_A_PIECE,tessere[i][j].getMatrixPrintWithElementes());
             }
         }
         return m;
     }
 
+    @SuppressWarnings("unused")
     public void printBooleanValues(){
         for(int i = 0; i < dim; i++){
             for(int j = 0; j < dim; j++){

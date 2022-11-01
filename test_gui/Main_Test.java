@@ -26,6 +26,7 @@ public class Main_Test {
         }
 
 
+
         MergedIcon mergedIcon = new MergedIcon(new ImageIcon("tessere/" + m.getPiece(0,0).getCardinalPoints() + ".png"),
                                                 new ImageIcon("tessere/stickman_trasparente_300x300.png"));
 

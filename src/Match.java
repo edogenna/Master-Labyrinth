@@ -13,9 +13,19 @@ public class Match {
     private int rowPos;
     private int colPos;
     private Maze maze;
-    private Piece pieceExternal;
+    private Piece externalPiece;
     private final Scanner in;
-    private int numeroMosse;
+    private int moveCounter;
+
+    private final static char CHAR_NORD = 'w';
+    private final static char CHAR_SUD = 's';
+    private final static char CHAR_EST = 'd';
+    private final static char CHAR_WEST = 'a';
+    private final static char CHAR_ROTATE_CLOCKWISE = 'm';
+    private final static char CHAR_ROTATE_COUNTER_CLOCKWISE = 'n';
+    private final static char CHAR_INSERT = 'i';
+    private final static char CHAR_PRINT_STATUS = 'p';
+    private final static char CHAR_HELP = 'h';
 
     public Match(Scanner in){
         this(-1,in);
@@ -28,9 +38,9 @@ public class Match {
         this.rowPos = 0;
         this.colPos = 0;
         this.maze = new Maze(DEFAULT_MAZE_DIM);
-        this.pieceExternal = new Piece();
+        this.externalPiece = new Piece();
         this.in = in;
-        this.numeroMosse = 0;
+        this.moveCounter = 0;
     }
 
     private void setVite(){
@@ -38,19 +48,16 @@ public class Match {
         this.vite = in.nextInt();
     }
 
-    private void checkPremio(){ punteggio += maze.getPiece(rowPos,colPos).withdrawDeleteTresure(); }
-    public boolean controllaVittoria(){ return rowPos == (maze.getDim()-1) && colPos == (maze.getDim()-1); }
-    public int getPunteggio() { return punteggio; }
-    public int getVite() { return vite; }
-    public int getRowPos() { return rowPos; }
-    public int getColPos() { return colPos; }
+    private void checkTreasure(){ punteggio += maze.getPiece(rowPos,colPos).withdrawDeleteTreasure(); }
+    public boolean checkVictory(){ return rowPos == (maze.getDim()-1) && colPos == (maze.getDim()-1); }
+    
     private void caughtTrap() {
         System.out.println("Oh no, sei passato su una trappola!");
         vite--;
         if(vite <= 0)
             throw new NoMoreLifesException("Hai finito le vite!");
     }
-    public void spostatiEst(){
+    public void moveEst(){
         if(maze.getPiece(rowPos,colPos).isEst() || colPos >= maze.getDim()-1 || maze.getPiece(rowPos,colPos+1).isWest()) {
             throw new MoveNotAllowedException("Movement not allowed");
         }
@@ -63,9 +70,9 @@ public class Match {
 
         colPos++;
 
-        checkPremio();
+        checkTreasure();
     }
-    public void spostatiWest(){
+    public void moveWest(){
         if(maze.getPiece(rowPos,colPos).isWest() || colPos <= 0 || maze.getPiece(rowPos,colPos-1).isEst()){
             throw new MoveNotAllowedException("Movement not allowed");
         }
@@ -78,9 +85,9 @@ public class Match {
 
         colPos--;
 
-        checkPremio();
+        checkTreasure();
     }
-    public void spostatiSud(){
+    public void moveSud(){
         if(maze.getPiece(rowPos,colPos).isSud() || rowPos >= maze.getDim()-1 || maze.getPiece(rowPos+1,colPos).isNord()){
             throw new MoveNotAllowedException("Movement not allowed");
         }
@@ -93,9 +100,9 @@ public class Match {
 
         rowPos++;
 
-        checkPremio();
+        checkTreasure();
     }
-    public void spostatiNord(){
+    public void moveNord(){
         if(maze.getPiece(rowPos,colPos).isNord() || rowPos <= 0 || maze.getPiece(rowPos-1,colPos).isSud()){
             throw new MoveNotAllowedException("Movement not allowed");
         }
@@ -108,38 +115,38 @@ public class Match {
 
         rowPos--;
 
-        checkPremio();
+        checkTreasure();
     }
 
-    private boolean mossa(char c){
+    private boolean move(char c){
         try {
             switch (c) {
                 case CHAR_NORD:
-                    spostatiNord();
-                    numeroMosse++;
+                    moveNord();
+                    moveCounter++;
                     break;
                 case CHAR_EST:
-                    spostatiEst();
-                    numeroMosse++;
+                    moveEst();
+                    moveCounter++;
                     break;
                 case CHAR_SUD:
-                    spostatiSud();
-                    numeroMosse++;
+                    moveSud();
+                    moveCounter++;
                     break;
                 case CHAR_WEST:
-                    spostatiWest();
-                    numeroMosse++;
+                    moveWest();
+                    moveCounter++;
                     break;
                 case CHAR_ROTATE_CLOCKWISE:
-                    pieceExternal.rotateClockwise();
-                    numeroMosse++;
+                    externalPiece.rotateClockwise();
+                    moveCounter++;
                     break;
                 case CHAR_ROTATE_COUNTER_CLOCKWISE:
-                    pieceExternal.rotateCounterClockwise();
-                    numeroMosse++;
+                    externalPiece.rotateCounterClockwise();
+                    moveCounter++;
                     break;
                 case CHAR_INSERT:
-                    numeroMosse++;
+                    moveCounter++;
                     return insert();
                 case CHAR_PRINT_STATUS:
                     printPointsAndLF();
@@ -190,7 +197,7 @@ public class Match {
 
         printMatrixWithIndex(matrixMaze,4);
         System.out.print("\n\n");
-        printMatrix(pieceExternal.getMatrixPrintWithElementes());
+        printMatrix(externalPiece.getMatrixPrintWithElementes());
         System.out.print("\n\n");
     }
     private void printPointsAndLF(){
@@ -217,46 +224,46 @@ public class Match {
         switch (cardinalPoint){
             case 'e' -> {
                 for(int i = maze.getDim()-1; i >= 0; i--)
-                    pieceExternal = maze.insertPiece(index,i,pieceExternal);
+                    externalPiece = maze.insertPiece(index,i, externalPiece);
 
                 if(index == rowPos) {
                     colPos--;
                     if(colPos < 0)
                         colPos = maze.getDim()-1;
-                    checkPremio();
+                    checkTreasure();
                 }
             }
             case 'n' -> {
                 for(int i = 0; i < maze.getDim(); i++)
-                    pieceExternal = maze.insertPiece(i,index,pieceExternal);
+                    externalPiece = maze.insertPiece(i,index, externalPiece);
 
                 if(index == colPos) {
                     rowPos++;
                     if(rowPos >= maze.getDim())
                         rowPos = 0;
-                    checkPremio();
+                    checkTreasure();
                 }
             }
             case 's' -> {
                 for(int i = maze.getDim()-1; i >= 0; i--)
-                    pieceExternal = maze.insertPiece(i,index,pieceExternal);
+                    externalPiece = maze.insertPiece(i,index, externalPiece);
 
                 if(index == colPos) {
                     rowPos--;
                     if(rowPos < 0)
                         rowPos = maze.getDim()-1;
-                    checkPremio();
+                    checkTreasure();
                 }
             }
             case 'w' -> {
                 for(int i = 0; i < maze.getDim(); i++)
-                    pieceExternal = maze.insertPiece(index,i,pieceExternal);
+                    externalPiece = maze.insertPiece(index,i, externalPiece);
 
                 if(index == rowPos) {
                     colPos++;
                     if(colPos >= maze.getDim())
                         colPos = 0;
-                    checkPremio();
+                    checkTreasure();
                 }
             }
         }
@@ -273,19 +280,19 @@ public class Match {
                 do {
                     System.out.println("cosa vuoi fare? (digita h per aiuto)");
                     c = in.next().charAt(0);
-                } while (!mossa(c));
+                } while (!move(c));
                 printBoard();
 
-                partitaFinita = controllaVittoria();
+                partitaFinita = checkVictory();
             }catch (NoMoreLifesException e){
                 System.out.println("Hai perso!");
-                System.out.println("Hai ottenuto " + punteggio + " in " + numeroMosse + " mosse");
+                System.out.println("Hai ottenuto " + punteggio + " in " + moveCounter + " mosse");
                 return;
             }
         }
 
 
         System.out.println("VITTORIA!");
-        System.out.println("Hai ottenuto " + punteggio + " punti in " + numeroMosse + " mosse");
+        System.out.println("Hai ottenuto " + punteggio + " punti in " + moveCounter + " mosse");
     }
 }

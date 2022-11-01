@@ -2,6 +2,7 @@ package Labyrinth.src;
 import java.util.Random;
 import static Labyrinth.src.Constants.*;
 
+//@SuppressWarnings("unused")
 public class Piece {
     private boolean nord;
     private boolean est;
@@ -10,6 +11,20 @@ public class Piece {
     private Tresure tresure;
     private CardinalPoint trap;
     private boolean trapRevealed;
+    private static final char BIG_TRESURE = '@';
+    private static final char SMALL_TRESURE = '*';
+    private static final char CHAR_TRAP = 'X';
+    private static final int ODDS_TRAP = 1;
+    private static final int ODDS_BIG_TRESURE = 1;
+    private static final int ODDS_SMALL_TRESURE = 3;
+    private static final int POINTS_BIG_TRESURE = 1000;
+    private static final int POINTS_SMALL_TRESURE = 100;
+    public static final int ROWS_IN_A_PIECE = 4;
+    public static final int COLUMNS_IN_A_PIECE = 10;
+    private static final String HORIZONTAL_NORD_SUD_TRUE = " +------+ ";
+    private static final String HORIZONTAL_NORD_SUD_FALSE = " +      + ";
+    private static final String HORIZONTAL_WEST_FALSE_EST_TRUE = "        | ";
+    private static final String HORIZONTAL_WEST_FALSE_EST_FALSE = "          ";
 
     public Piece(boolean nord, boolean est, boolean sud, boolean west, CardinalPoint cardinalTrap, Tresure tresure) {
         this.nord = nord;
@@ -62,40 +77,40 @@ public class Piece {
         if(noTrap >= ODDS_TRAP)
             return CardinalPoint.NONE;
 
-        int conta = 0;
-        if(!n) conta++;
-        if(!e) conta++;
-        if(!s) conta++;
-        if(!w) conta++;
+        int count = 0;
+        if(!n) count++;
+        if(!e) count++;
+        if(!s) count++;
+        if(!w) count++;
 
-        int num = rand.nextInt(conta);
-        CardinalPoint[] ar = new CardinalPoint[conta];
-        conta--;
+        int num = rand.nextInt(count);
+        CardinalPoint[] ar = new CardinalPoint[count];
+        count--;
         if(!n){
-            ar[conta] = CardinalPoint.NORD;
-            conta--;
+            ar[count] = CardinalPoint.NORD;
+            count--;
         }
         if(!e){
-            ar[conta] = CardinalPoint.EST;
-            conta--;
+            ar[count] = CardinalPoint.EST;
+            count--;
         }
         if(!s){
-            ar[conta] = CardinalPoint.SUD;
-            conta--;
+            ar[count] = CardinalPoint.SUD;
+            count--;
         }
         if(!w){
-            ar[conta] = CardinalPoint.WEST;
-            conta--;
+            ar[count] = CardinalPoint.WEST;
         }
 
         return ar[num];
     }
 
+    @SuppressWarnings("unused")
     public void print(){
         if(this.nord)
-            System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
+            System.out.print(HORIZONTAL_NORD_SUD_TRUE);
         else
-            System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
+            System.out.print(HORIZONTAL_NORD_SUD_FALSE);
 
         System.out.print("\n");
 
@@ -119,9 +134,9 @@ public class Piece {
         }
 
         if(this.sud)
-            System.out.print(ORIZZONTAL_NORD_SUD_TRUE);
+            System.out.print(HORIZONTAL_NORD_SUD_TRUE);
         else
-            System.out.print(ORIZZONTAL_NORD_SUD_FALSE);
+            System.out.print(HORIZONTAL_NORD_SUD_FALSE);
         System.out.print("\n");
 
     }
@@ -133,6 +148,17 @@ public class Piece {
         this.sud = this.est;
         this.est = this.nord;
         this.nord = tmp;
+
+        this.trap = rotateClockwise(this.trap);
+    }
+    private CardinalPoint rotateClockwise(CardinalPoint cp){
+        return switch (cp){
+            case NONE -> CardinalPoint.NONE;
+            case NORD -> CardinalPoint.WEST;
+            case EST -> CardinalPoint.NORD;
+            case SUD -> CardinalPoint.EST;
+            case WEST -> CardinalPoint.SUD;
+        };
     }
     public void rotateCounterClockwise(){
         boolean tmp;
@@ -141,7 +167,20 @@ public class Piece {
         this.sud = this.west;
         this.west = this.nord;
         this.nord = tmp;
+
+        this.trap = rotateCounterClockwise(this.trap);
     }
+    private CardinalPoint rotateCounterClockwise(CardinalPoint cp){
+        return switch (cp){
+            case NONE -> CardinalPoint.NONE;
+            case NORD -> CardinalPoint.EST;
+            case EST -> CardinalPoint.SUD;
+            case SUD -> CardinalPoint.WEST;
+            case WEST -> CardinalPoint.NORD;
+        };
+    }
+
+    @SuppressWarnings("unused")
     public void rotate180(){
         boolean tmp;
         tmp = this.west;
@@ -168,36 +207,35 @@ public class Piece {
     public boolean isEst() { return est; }
     public boolean isSud() { return sud; }
     public boolean isWest() { return west; }
-    public Tresure getTresure() { return tresure; }
     public CardinalPoint getTrap() { return trap;}
-    public boolean getTrapRevealed() { return trapRevealed; }
 
     public char[][] getMatrixPrint(){
         char[][] m = new char[ROWS_IN_A_PIECE][];
         if(nord)
-            m[0] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+            m[0] = HORIZONTAL_NORD_SUD_TRUE.toCharArray();
         else
-            m[0] = ORIZZONTAL_NORD_SUD_FALSE.toCharArray();
+            m[0] = HORIZONTAL_NORD_SUD_FALSE.toCharArray();
 
         for(int i = 1; i < ROWS_IN_A_PIECE-1; i++){
+            String HORIZONTAL_WEST_TRUE_EST_TRUE = " |      | ";
+            String HORIZONTAL_WEST_TRUE_EST_FALSE = " |        ";
             if(est && west)
-                m[i] = ORIZZONTAL_WEST_TRUE_EST_TRUE.toCharArray();
+                m[i] = HORIZONTAL_WEST_TRUE_EST_TRUE.toCharArray();
             else if(est)
-                m[i] = ORIZZONTAL_WEST_FALSE_EST_TRUE.toCharArray();
+                m[i] = HORIZONTAL_WEST_FALSE_EST_TRUE.toCharArray();
             else if(west)
-                m[i] = ORIZZONTAL_WEST_TRUE_EST_FALSE.toCharArray();
+                m[i] = HORIZONTAL_WEST_TRUE_EST_FALSE.toCharArray();
             else
-                m[i] = ORIZZONTAL_WEST_FALSE_EST_FALSE.toCharArray();
+                m[i] = HORIZONTAL_WEST_FALSE_EST_FALSE.toCharArray();
         }
 
         if(sud)
-            m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_TRUE.toCharArray();
+            m[ROWS_IN_A_PIECE-1] = HORIZONTAL_NORD_SUD_TRUE.toCharArray();
         else
-            m[ROWS_IN_A_PIECE-1] = ORIZZONTAL_NORD_SUD_FALSE.toCharArray();
+            m[ROWS_IN_A_PIECE-1] = HORIZONTAL_NORD_SUD_FALSE.toCharArray();
 
         return m;
     }
-
     public char[][] getMatrixPrintWithElementes(){
         char [][]m = getMatrixPrint();
         switch (tresure){
@@ -229,19 +267,16 @@ public class Piece {
         return m;
     }
 
-    private void setCentreOfPiece(char m[][], char c){
+    private void setCentreOfPiece(char[][] m, char c){
         m[1][4] = c;
         m[1][5] = c;
         m[2][4] = c;
         m[2][5] = c;
     }
-
-    public int withdrawDeleteTresure() {
+    public int withdrawDeleteTreasure() {
         int p = 0;
 
-        if(tresure == Tresure.NONE) {
-            //System.out.println("Non c'è nessun tesoro su questa tessera!");
-        }else if(tresure == Tresure.BIG)
+        if(tresure == Tresure.BIG)
             p = POINTS_BIG_TRESURE;
         else if(tresure == Tresure.SMALL)
             p = POINTS_SMALL_TRESURE;
@@ -251,15 +286,11 @@ public class Piece {
         tresure = Tresure.NONE;
         return p;
     }
-
-    public void deleteTresure(){ this.tresure = Tresure.NONE; }
-
     public void revealTrap(){
         if(this.trap == CardinalPoint.NONE)
             return;
         this.trapRevealed = true;
     }
-
     public int getCardinalPoints(){
         int n = 0;
         if(nord) n+= 8;
