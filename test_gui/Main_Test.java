@@ -13,10 +13,10 @@ public class Main_Test {
         JFrame f =  new JFrame("panel");
         Maze m = new Maze();
 
-        JLabel[][] labels = new JLabel[DEFAULT_MAZE_DIM][DEFAULT_MAZE_DIM];
+        JLabel[][] labels = new JLabel[DEFAULT_NUMBER_OF_PIECES_IN_ROW][DEFAULT_NUMBER_OF_PIECES_IN_ROW];
 
-        for(int i = 0; i < DEFAULT_MAZE_DIM; i++){
-            for(int j = 0; j < DEFAULT_MAZE_DIM; j++) {
+        for(int i = 0; i < DEFAULT_NUMBER_OF_PIECES_IN_ROW; i++){
+            for(int j = 0; j < DEFAULT_NUMBER_OF_PIECES_IN_ROW; j++) {
 //                ImageIcon imageIcon = new ImageIcon("tessere/" + m.getPiece(i,j).getCardinalPoints() + ".png"); // load the image to a imageIcon
 //                Image image = imageIcon.getImage(); // transform it
 //                Image newimg = image.getScaledInstance(DIM_IMG, DIM_IMG, java.awt.Image.SCALE_SMOOTH);
@@ -33,7 +33,7 @@ public class Main_Test {
         labels[0][0].setIcon(MergedIcon.resizeImage(mergedIcon,DIM_IMG));
 
 
-        f.setLayout(new GridLayout(DEFAULT_MAZE_DIM,DEFAULT_MAZE_DIM));
+        f.setLayout(new GridLayout(DEFAULT_NUMBER_OF_PIECES_IN_ROW,DEFAULT_NUMBER_OF_PIECES_IN_ROW));
 
 //        // JButton
 //        JButton  b1, b2;

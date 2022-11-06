@@ -2,7 +2,6 @@ package Labyrinth.src;
 import java.util.Random;
 import static Labyrinth.src.Constants.*;
 
-//@SuppressWarnings("unused")
 public class Piece {
     private boolean nord;
     private boolean est;
@@ -11,22 +10,36 @@ public class Piece {
     private Tresure tresure;
     private CardinalPoint trap;
     private boolean trapRevealed;
-    private static final char BIG_TRESURE = '@';
-    private static final char SMALL_TRESURE = '*';
+    private Dimension dimension;
+
+    //CONSTANTS
+    private static final char BIG_TREASURE = '@';
+    private static final char SMALL_TREASURE = '*';
     private static final char CHAR_TRAP = 'X';
     private static final int ODDS_TRAP = 1;
-    private static final int ODDS_BIG_TRESURE = 1;
-    private static final int ODDS_SMALL_TRESURE = 3;
-    private static final int POINTS_BIG_TRESURE = 1000;
-    private static final int POINTS_SMALL_TRESURE = 100;
-    public static final int ROWS_IN_A_PIECE = 4;
-    public static final int COLUMNS_IN_A_PIECE = 10;
-    private static final String HORIZONTAL_NORD_SUD_TRUE = " +------+ ";
-    private static final String HORIZONTAL_NORD_SUD_FALSE = " +      + ";
-    private static final String HORIZONTAL_WEST_FALSE_EST_TRUE = "        | ";
-    private static final String HORIZONTAL_WEST_FALSE_EST_FALSE = "          ";
+    private static final int ODDS_BIG_TREASURE = 1;
+    private static final int ODDS_SMALL_TREASURE = 3;
+    private static final int POINTS_BIG_TREASURE = 1000;
+    private static final int POINTS_SMALL_TREASURE = 100;
+    public static final int ROWS_IN_A_PIECE_LARGE = 4;
+    public static final int COLUMNS_IN_A_PIECE_LARGE = 10;
+    private static final String HORIZONTAL_NORD_SUD_TRUE_LARGE = " +------+ ";
+    private static final String HORIZONTAL_NORD_SUD_FALSE_LARGE = " +      + ";
+    private static final String HORIZONTAL_WEST_FALSE_EST_TRUE_LARGE = "        | ";
+    private static final String HORIZONTAL_WEST_TRUE_EST_TRUE_LARGE = " |      | ";
+    private static final String HORIZONTAL_WEST_TRUE_EST_FALSE_LARGE = " |        ";
+    private static final String HORIZONTAL_WEST_FALSE_EST_FALSE_LARGE = "          ";
+    public static final int ROWS_IN_A_PIECE_SMALL = 3;
+    public static final int COLUMNS_IN_A_PIECE_SMALL = 8;
+    private static final String HORIZONTAL_NORD_SUD_TRUE_SMALL = " +----+ ";
+    private static final String HORIZONTAL_NORD_SUD_FALSE_SMALL = " +    + ";
+    private static final String HORIZONTAL_WEST_FALSE_EST_TRUE_SMALL = "      | ";
+    private static final String HORIZONTAL_WEST_TRUE_EST_TRUE_SMALL = " |    | ";
+    private static final String HORIZONTAL_WEST_TRUE_EST_FALSE_SMALL = " |      ";
+    private static final String HORIZONTAL_WEST_FALSE_EST_FALSE_SMALL = "        ";
 
-    public Piece(boolean nord, boolean est, boolean sud, boolean west, CardinalPoint cardinalTrap, Tresure tresure) {
+    
+    public Piece(boolean nord, boolean est, boolean sud, boolean west, CardinalPoint cardinalTrap, Tresure tresure, Dimension dimension) {
         this.nord = nord;
         this.est = est;
         this.sud = sud;
@@ -34,24 +47,26 @@ public class Piece {
         this.tresure = tresure;
         this.trap = cardinalTrap;
         this.trapRevealed = false;
+        this.dimension = dimension;
     }
 
-    public Piece(boolean nord, boolean est, boolean sud, boolean west) {
-        this(nord,est,sud,west,generateTrap(nord, est, sud, west), generateTresure());
+    public Piece(boolean nord, boolean est, boolean sud, boolean west, Dimension dimension) {
+        this(nord,est,sud,west,generateTrap(nord, est, sud, west), generateTreasure(), dimension);
     }
 
-    public Piece(boolean nord, boolean est, boolean sud, boolean west, Tresure tresure){
-        this(nord,est,sud,west,generateTrap(nord, est, sud, west), tresure);
+    public Piece(boolean nord, boolean est, boolean sud, boolean west, Tresure tresure, Dimension dimension){
+        this(nord,est,sud,west,generateTrap(nord, est, sud, west), tresure, dimension);
     }
 
-    public Piece(){
+    public Piece(Dimension dimension){
         Random rand = new Random();
 
         this.nord = rand.nextBoolean();
         this.est = rand.nextBoolean();
         this.sud = rand.nextBoolean();
         this.west = rand.nextBoolean();
-        this.tresure = generateTresure();
+        this.tresure = generateTreasure();
+        this.dimension = dimension;
 
 
         //elimino il problema delle tessere tutte chiuse
@@ -108,9 +123,9 @@ public class Piece {
     @SuppressWarnings("unused")
     public void print(){
         if(this.nord)
-            System.out.print(HORIZONTAL_NORD_SUD_TRUE);
+            System.out.print(HORIZONTAL_NORD_SUD_TRUE_LARGE);
         else
-            System.out.print(HORIZONTAL_NORD_SUD_FALSE);
+            System.out.print(HORIZONTAL_NORD_SUD_FALSE_LARGE);
 
         System.out.print("\n");
 
@@ -134,9 +149,9 @@ public class Piece {
         }
 
         if(this.sud)
-            System.out.print(HORIZONTAL_NORD_SUD_TRUE);
+            System.out.print(HORIZONTAL_NORD_SUD_TRUE_LARGE);
         else
-            System.out.print(HORIZONTAL_NORD_SUD_FALSE);
+            System.out.print(HORIZONTAL_NORD_SUD_FALSE_LARGE);
         System.out.print("\n");
 
     }
@@ -192,13 +207,13 @@ public class Piece {
         this.nord = tmp;
     }
 
-    private static Tresure generateTresure(){
+    private static Tresure generateTreasure(){
         Random rand = new Random();
 
         int n = rand.nextInt(10);
-        if(n < ODDS_BIG_TRESURE)
+        if(n < ODDS_BIG_TREASURE)
             return Tresure.BIG;
-        if(n <= ODDS_SMALL_TRESURE)
+        if(n <= ODDS_SMALL_TREASURE)
             return Tresure.SMALL;
         return Tresure.NONE;
     }
@@ -209,38 +224,42 @@ public class Piece {
     public boolean isWest() { return west; }
     public CardinalPoint getTrap() { return trap;}
 
-    public char[][] getMatrixPrint(){
-        char[][] m = new char[ROWS_IN_A_PIECE][];
+    public char[][] getMatrixPrint(boolean withElements){
+        return dimension == Dimension.LARGE ? getMatrixPrintLarge(withElements) : getMatrixPrintSmall(withElements);
+    }
+    private char[][] getMatrixPrintLarge(boolean withElements){
+        char[][] m = new char[ROWS_IN_A_PIECE_LARGE][];
         if(nord)
-            m[0] = HORIZONTAL_NORD_SUD_TRUE.toCharArray();
+            m[0] = HORIZONTAL_NORD_SUD_TRUE_LARGE.toCharArray();
         else
-            m[0] = HORIZONTAL_NORD_SUD_FALSE.toCharArray();
+            m[0] = HORIZONTAL_NORD_SUD_FALSE_LARGE.toCharArray();
 
-        for(int i = 1; i < ROWS_IN_A_PIECE-1; i++){
-            String HORIZONTAL_WEST_TRUE_EST_TRUE = " |      | ";
-            String HORIZONTAL_WEST_TRUE_EST_FALSE = " |        ";
+        for(int i = 1; i < ROWS_IN_A_PIECE_LARGE -1; i++){
+
             if(est && west)
-                m[i] = HORIZONTAL_WEST_TRUE_EST_TRUE.toCharArray();
+                m[i] = HORIZONTAL_WEST_TRUE_EST_TRUE_LARGE.toCharArray();
             else if(est)
-                m[i] = HORIZONTAL_WEST_FALSE_EST_TRUE.toCharArray();
+                m[i] = HORIZONTAL_WEST_FALSE_EST_TRUE_LARGE.toCharArray();
             else if(west)
-                m[i] = HORIZONTAL_WEST_TRUE_EST_FALSE.toCharArray();
+                m[i] = HORIZONTAL_WEST_TRUE_EST_FALSE_LARGE.toCharArray();
             else
-                m[i] = HORIZONTAL_WEST_FALSE_EST_FALSE.toCharArray();
+                m[i] = HORIZONTAL_WEST_FALSE_EST_FALSE_LARGE.toCharArray();
         }
 
         if(sud)
-            m[ROWS_IN_A_PIECE-1] = HORIZONTAL_NORD_SUD_TRUE.toCharArray();
+            m[ROWS_IN_A_PIECE_LARGE -1] = HORIZONTAL_NORD_SUD_TRUE_LARGE.toCharArray();
         else
-            m[ROWS_IN_A_PIECE-1] = HORIZONTAL_NORD_SUD_FALSE.toCharArray();
+            m[ROWS_IN_A_PIECE_LARGE -1] = HORIZONTAL_NORD_SUD_FALSE_LARGE.toCharArray();
+
+        if(withElements)
+            addMatrixPrintLargeWithElements(m);
 
         return m;
     }
-    public char[][] getMatrixPrintWithElementes(){
-        char [][]m = getMatrixPrint();
+    private void addMatrixPrintLargeWithElements(char [][]m){
         switch (tresure){
-            case BIG -> setCentreOfPiece(m, BIG_TRESURE);
-            case SMALL -> setCentreOfPiece(m, SMALL_TRESURE);
+            case BIG -> setCentreOfPieceLarge(m, BIG_TREASURE);
+            case SMALL -> setCentreOfPieceLarge(m, SMALL_TREASURE);
         }
 
         if(trapRevealed){
@@ -264,24 +283,73 @@ public class Piece {
             }
         }
 
+    }
+    private char[][] getMatrixPrintSmall(boolean withElements){
+        char[][] m = new char[ROWS_IN_A_PIECE_SMALL][];
+        if(nord)
+            m[0] = HORIZONTAL_NORD_SUD_TRUE_SMALL.toCharArray();
+        else
+            m[0] = HORIZONTAL_NORD_SUD_FALSE_SMALL.toCharArray();
+
+        if(est && west)
+            m[1] = HORIZONTAL_WEST_TRUE_EST_TRUE_SMALL.toCharArray();
+        else if(est)
+            m[1] = HORIZONTAL_WEST_FALSE_EST_TRUE_SMALL.toCharArray();
+        else if(west)
+            m[1] = HORIZONTAL_WEST_TRUE_EST_FALSE_SMALL.toCharArray();
+        else
+            m[1] = HORIZONTAL_WEST_FALSE_EST_FALSE_SMALL.toCharArray();
+
+        if(sud)
+            m[ROWS_IN_A_PIECE_SMALL -1] = HORIZONTAL_NORD_SUD_TRUE_SMALL.toCharArray();
+        else
+            m[ROWS_IN_A_PIECE_SMALL -1] = HORIZONTAL_NORD_SUD_FALSE_SMALL.toCharArray();
+
+        if(withElements)
+            addMatrixPrintSmallWithElements(m);
+
         return m;
     }
+    public void addMatrixPrintSmallWithElements(char [][]m){
+        switch (tresure){
+            case BIG -> setCentreOfPieceSmall(m, BIG_TREASURE);
+            case SMALL -> setCentreOfPieceSmall(m, SMALL_TREASURE);
+        }
 
-    private void setCentreOfPiece(char[][] m, char c){
+        if(trapRevealed){
+            switch (trap){
+                case NORD -> {
+                    m[0][3] = CHAR_TRAP;
+                    m[0][4] = CHAR_TRAP;
+                }
+                case EST -> m[1][6] = CHAR_TRAP;
+                case SUD -> {
+                    m[2][3] = CHAR_TRAP;
+                    m[2][4] = CHAR_TRAP;
+                }
+                case WEST -> m[1][1] = CHAR_TRAP;
+            }
+        }
+    }
+
+    private void setCentreOfPieceLarge(char[][] m, char c){
         m[1][4] = c;
         m[1][5] = c;
         m[2][4] = c;
         m[2][5] = c;
     }
+    private void setCentreOfPieceSmall(char[][] m, char c){
+        m[1][3] = c;
+        m[1][4] = c;
+    }
+
     public int withdrawDeleteTreasure() {
         int p = 0;
 
         if(tresure == Tresure.BIG)
-            p = POINTS_BIG_TRESURE;
+            p = POINTS_BIG_TREASURE;
         else if(tresure == Tresure.SMALL)
-            p = POINTS_SMALL_TRESURE;
-        else
-            System.out.println("Questa tessera ha un tesoro non compatibile!");
+            p = POINTS_SMALL_TREASURE;
 
         tresure = Tresure.NONE;
         return p;
